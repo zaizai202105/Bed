@@ -539,14 +539,6 @@ body {
   </main>
 
   <p class="footnote">早点睡 · 明天见</p>
-
-  <!-- 下载 APK 按钮 (如果你有打包的 apk 文件，这个按钮就会起作用) -->
-  <div style="text-align: center; margin-top: 8px;">
-    <a href="./app-release.apk" download style="display: inline-flex; align-items: center; gap: 6px; color: #7ef7c8; text-decoration: none; font-size: 13px; background: rgba(126, 247, 200, 0.1); padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(126, 247, 200, 0.2);">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-      下载安卓 App
-    </a>
-  </div>
 </div>
 
 <script>
@@ -706,4 +698,27 @@ body {
       }
 
       cell.appendChild(label);
-      
+      cell.appendChild(dot);
+      frag.appendChild(cell);
+    }
+
+    el.week.textContent = '';
+    el.week.appendChild(frag);
+  }
+
+  function render() {
+    var now = new Date();
+    var session = getSession(now);
+    var data = getData();
+    var record = data[session.key];
+
+    el.clockHM.textContent = pad2(now.getHours()) + ':' + pad2(now.getMinutes());
+    el.clockS.textContent = pad2(now.getSeconds());
+
+    if (record) {
+      el.btn.dataset.state = 'done';
+      el.btn.disabled = true;
+      el.btnLabel.textContent = '已打卡';
+      el.status.textContent = (record.ts ? fmtTime(new Date(record.ts)) : '') + ' 已打卡，晚安 🌙';
+      el.status.dataset.tone = 'done';
+    } else if (
