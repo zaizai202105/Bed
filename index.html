@@ -146,7 +146,6 @@ body {
     0 10px 30px -12px rgba(0, 0, 0, 0.6);
 }
 
-/* 镜面描边 */
 .card::before {
   content: "";
   position: absolute;
@@ -170,7 +169,6 @@ body {
   z-index: 2;
 }
 
-/* 高光层（顶光 + 底反光） */
 .card::after {
   content: "";
   position: absolute;
@@ -302,7 +300,6 @@ body {
   outline-offset: 3px;
 }
 
-/* 锁定态 */
 .btn[data-state="locked"] {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.055));
   color: rgba(243, 245, 255, 0.4);
@@ -312,7 +309,6 @@ body {
   cursor: not-allowed;
 }
 
-/* 已打卡 */
 .btn[data-state="done"] {
   background: linear-gradient(180deg, rgba(160, 255, 228, 0.96), rgba(95, 216, 255, 0.88));
   color: #04231d;
@@ -324,7 +320,6 @@ body {
     0 2px 6px rgba(0, 0, 0, 0.22);
 }
 
-/* 光泽扫过 */
 .btn-shine {
   position: absolute;
   inset: 0;
@@ -544,19 +539,28 @@ body {
   </main>
 
   <p class="footnote">早点睡 · 明天见</p>
+
+  <!-- 下载 APK 按钮 (如果你有打包的 apk 文件，这个按钮就会起作用) -->
+  <div style="text-align: center; margin-top: 8px;">
+    <a href="./app-release.apk" download style="display: inline-flex; align-items: center; gap: 6px; color: #7ef7c8; text-decoration: none; font-size: 13px; background: rgba(126, 247, 200, 0.1); padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(126, 247, 200, 0.2);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      下载安卓 App
+    </a>
+  </div>
 </div>
 
 <script>
 (function () {
   'use strict';
 
-  /* ==================== 配置 ==================== */
+  /* ==================== ⚙️ 核心配置区（在这里修改时间） ==================== */
   var CONFIG = {
-    targetHour: 22,
-    targetMinute: 30,
-    nightEndHour: 3,                 // 凌晨 3 点前仍算「前一晚」
+    targetHour: 22,        // 打卡开放的小时 (24小时制)
+    targetMinute: 30,      // 打卡开放的分钟
+    nightEndHour: 3,       // 凌晨几点前算作“前一天”（默认3点）
     storageKey: 'bedtime_checkin_v1'
   };
+  /* ==================================================================== */
 
   var WEEK_LABELS = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -616,17 +620,10 @@ body {
   function saveData(data) {
     try {
       window.localStorage.setItem(CONFIG.storageKey, JSON.stringify(data));
-    } catch (e) {
-      /* 隐私模式 / 存储已满：静默降级，仅本次会话有效 */
-    }
+    } catch (e) {}
   }
 
   /* ==================== 会话计算 ==================== */
-  /**
-   * 一个「打卡会话」归属某一天：
-   *   窗口 = 当天 22:30  ~  次日 03:00
-   * 凌晨 0:00-03:00 的打卡仍记在前一天名下。
-   */
   function getSession(now) {
     var d = new Date(now.getTime());
     if (now.getHours() < CONFIG.nightEndHour) {
@@ -653,7 +650,7 @@ body {
   function computeStreak(data, session) {
     var d = new Date(session.date.getTime());
     if (!data[dayKey(d)]) {
-      d.setDate(d.getDate() - 1); // 今天还没打卡 → 从昨天往前数
+      d.setDate(d.getDate() - 1);
     }
     var n = 0;
     while (data[dayKey(d)] && n < 4000) {
@@ -709,150 +706,4 @@ body {
       }
 
       cell.appendChild(label);
-      cell.appendChild(dot);
-      frag.appendChild(cell);
-    }
-
-    el.week.textContent = '';
-    el.week.appendChild(frag);
-  }
-
-  function render() {
-    var now = new Date();
-    var session = getSession(now);
-    var data = getData();
-    var record = data[session.key];
-
-    /* --- 时钟 --- */
-    el.clockHM.textContent = pad2(now.getHours()) + ':' + pad2(now.getMinutes());
-    el.clockS.textContent = pad2(now.getSeconds());
-
-    /* --- 状态机 --- */
-    if (record) {
-      el.btn.dataset.state = 'done';
-      el.btn.disabled = true;
-      el.btnLabel.textContent = '已打卡';
-      el.status.textContent = (record.ts ? fmtTime(new Date(record.ts)) : '') + ' 已打卡，晚安 🌙';
-      el.status.dataset.tone = 'done';
-    } else if (session.isOpen) {
-      el.btn.dataset.state = 'ready';
-      el.btn.disabled = false;
-      el.btnLabel.textContent = '打 卡';
-      el.status.textContent = '打卡通道已开启 · 早点休息';
-      el.status.dataset.tone = 'ready';
-    } else {
-      el.btn.dataset.state = 'locked';
-      el.btn.disabled = true;
-      el.btnLabel.textContent = '未到时间';
-      el.status.textContent = '距开放还有 ' + fmtDuration(session.start.getTime() - now.getTime());
-      el.status.dataset.tone = 'locked';
-    }
-
-    /* --- 统计（按需刷新）--- */
-    if (statsDirty || session.key !== lastSessionKey) {
-      renderStats(data, session);
-      statsDirty = false;
-      lastSessionKey = session.key;
-    }
-  }
-
-  /* ==================== 打卡 ==================== */
-  function doCheckIn() {
-    var now = new Date();
-    var session = getSession(now);
-
-    if (!session.isOpen) return;
-
-    var data = getData();
-    if (data[session.key]) return;   // 幂等
-
-    data[session.key] = { ts: now.getTime() };
-    saveData(data);
-    cache = data;
-
-    statsDirty = true;
-    render();
-    burst(el.btn);
-  }
-
-  /* ==================== 粒子庆祝 ==================== */
-  function burst(anchor) {
-    if (window.matchMedia &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    var rect = anchor.getBoundingClientRect();
-    var cx = rect.left + rect.width / 2;
-    var cy = rect.top + rect.height / 2;
-    var colors = ['#7ef7c8', '#6fd6ff', '#b39dff', '#ffd6f0', '#fff3b0'];
-    var COUNT = 26;
-
-    for (var i = 0; i < COUNT; i++) {
-      (function (i) {
-        var p = document.createElement('i');
-        p.className = 'particle';
-
-        var angle = (Math.PI * 2 * i) / COUNT + (Math.random() - 0.5) * 0.7;
-        var dist = 70 + Math.random() * 130;
-        var size = 4 + Math.random() * 5;
-
-        p.style.setProperty('--x', (Math.cos(angle) * dist).toFixed(1) + 'px');
-        p.style.setProperty('--y', (Math.sin(angle) * dist).toFixed(1) + 'px');
-        p.style.left = cx + 'px';
-        p.style.top = cy + 'px';
-        p.style.width = size.toFixed(1) + 'px';
-        p.style.height = size.toFixed(1) + 'px';
-        p.style.color = colors[i % colors.length];
-
-        document.body.appendChild(p);
-        window.setTimeout(function () {
-          if (p.parentNode) p.parentNode.removeChild(p);
-        }, 1100);
-      })(i);
-    }
-  }
-
-  /* ==================== 事件绑定 ==================== */
-  el.btn.addEventListener('click', function () {
-    if (el.btn.disabled) return;
-    doCheckIn();
-  });
-
-  /* 跨标签页同步 */
-  window.addEventListener('storage', function (e) {
-    if (e.key === CONFIG.storageKey) {
-      cache = null;
-      statsDirty = true;
-      render();
-    }
-  });
-
-  /* 回到页面时立即刷新 */
-  document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) render();
-  });
-
-  /* 背景视差（轻微） */
-  var rafId = null;
-  window.addEventListener('pointermove', function (e) {
-    if (rafId) return;
-    rafId = window.requestAnimationFrame(function () {
-      var x = (e.clientX / window.innerWidth - 0.5) * -18;
-      var y = (e.clientY / window.innerHeight - 0.5) * -18;
-      el.backdrop.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
-      rafId = null;
-    });
-  }, { passive: true });
-
-  /* ==================== 对齐秒针的计时器 ==================== */
-  function scheduleTick() {
-    render();
-    var delay = 1000 - (Date.now() % 1000);
-    window.setTimeout(scheduleTick, delay + 8);
-  }
-
-  scheduleTick();
-
-})();
-</script>
-</body>
-</html>
+      
