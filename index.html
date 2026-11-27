@@ -29,10 +29,8 @@ body {
 }
 body.warning-mode { background: #1a0508; }
 
-/* 极简模式（强制关闭所有特效） */
-body.minimal-mode * {
-  animation: none !important; transition: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-}
+/* 极简模式 */
+body.minimal-mode * { animation: none !important; transition: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 body.minimal-mode .backdrop { background: #000 !important; }
 body.minimal-mode .blob, body.minimal-mode .grain, body.minimal-mode .card::before, body.minimal-mode .card::after { display: none !important; }
 body.minimal-mode .card { background: #111 !important; border: 1px solid #333 !important; box-shadow: none !important; }
@@ -61,11 +59,9 @@ body.warning-mode .card { box-shadow: inset 0 0 0 1px rgba(255, 94, 126, 0.2), i
 
 /* ============ 头部 ============ */
 .header-row { display: flex; justify-content: space-between; align-items: flex-start; }
-.badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; letter-spacing: 0.08em; color: var(--text-soft); background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2); transition: all 0.4s; }
-.badge.morning { background: rgba(255, 230, 150, 0.1); color: #ffe696; border-color: rgba(255, 230, 150, 0.2); }
 .icon-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--text-dim); cursor: pointer; transition: 0.3s; }
 .icon-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
-.title { margin-top: 12px; font-size: clamp(23px, 5.6vw, 27px); font-weight: 600; line-height: 1.25; transition: color 0.5s; }
+.title { font-size: clamp(23px, 5.6vw, 27px); font-weight: 600; line-height: 1.25; transition: color 0.5s; }
 body.warning-mode .title { color: var(--warning); }
 
 /* ============ 时钟与状态 ============ */
@@ -119,9 +115,11 @@ body.warning-mode .title { color: var(--warning); }
 .avg-label { font-size: 11px; color: var(--text-dim); }
 .avg-val { font-size: 16px; font-weight: 600; color: var(--theme); font-variant-numeric: tabular-nums; }
 
-.week-summary-btn { display: none; width: 100%; padding: 14px; border-radius: 18px; background: linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05)); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; font-weight: 600; font-size: 14px; cursor: pointer; text-align: center; margin-top: 4px; transition: 0.3s; }
+.week-summary-btn, .shop-btn { display: none; width: 100%; padding: 14px; border-radius: 18px; font-weight: 600; font-size: 14px; cursor: pointer; text-align: center; margin-top: 4px; transition: 0.3s; border: none; }
 .week-summary-btn.show { display: block; }
-.week-summary-btn:active { transform: scale(0.98); }
+.shop-btn { display: block; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-soft); }
+.week-summary-btn { background: linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05)); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; }
+.week-summary-btn:active, .shop-btn:active { transform: scale(0.98); }
 
 /* ============ 粒子 ============ */
 .particle { position: fixed; border-radius: 50%; background: currentColor; box-shadow: 0 0 12px currentColor; pointer-events: none; z-index: 9999; animation: pFly 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -189,14 +187,9 @@ body.warning-mode .title { color: var(--warning); }
 <div class="wrap">
   <main class="card">
     <div class="inner">
+      <!-- 头部 -->
       <div class="header-row">
-        <div>
-          <div class="badge" id="modeBadge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
-            <span id="badgeText">每日 22:00</span>
-          </div>
-          <h1 class="title" id="mainTitle">上床打卡</h1>
-        </div>
+        <h1 class="title" id="mainTitle">上床打卡</h1>
         <button class="icon-btn" id="settingsBtn" title="设置与数据">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
@@ -243,7 +236,9 @@ body.warning-mode .title { color: var(--warning); }
         </div>
       </div>
 
+      <!-- 按钮区 -->
       <button class="week-summary-btn" id="weekSummaryBtn">📊 查看本周睡眠总结</button>
+      <button class="shop-btn" id="shopBtn">🛒 积分兑换商店</button>
 
     </div>
   </main>
@@ -281,11 +276,9 @@ body.warning-mode .title { color: var(--warning); }
       <div style="display:flex; justify-content:space-between;"><span>⏱️ 平均睡眠：</span> <b id="sumAvg">--</b></div>
     </div>
 
-    <!-- 动态柱状图 -->
     <div class="chart-container" id="chartContainer"></div>
 
-    <div id="sumComment" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); color: var(--theme); font-weight: bold; text-align: center; font-size: 13px;">
-    </div>
+    <div id="sumComment" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); color: var(--theme); font-weight: bold; text-align: center; font-size: 13px;"></div>
     <button class="modal-btn confirm" id="weekSummaryClose" style="margin-top: 16px;">下周继续加油</button>
   </div>
 </div>
@@ -343,12 +336,11 @@ body.warning-mode .title { color: var(--warning); }
 (function () {
   'use strict';
 
-  // ==================== 核心配置 ====================
   var CONFIG = {
-    nightStart: { h: 22, m: 0 },      // 22:00 开启
-    nightEnd: { h: 3, m: 0 },         // 次日 03:00 结束
-    morningStart: { h: 6, m: 0 },     // 06:00 开启
-    morningEnd: { h: 9, m: 0 },       // 09:00 结束
+    nightStart: { h: 22, m: 0 },
+    nightEnd: { h: 3, m: 0 },
+    morningStart: { h: 6, m: 0 },
+    morningEnd: { h: 9, m: 0 },
     storageKey: 'bedtime_checkin_v4'
   };
 
@@ -362,7 +354,6 @@ body.warning-mode .title { color: var(--warning); }
   var WEEK_LABELS = ['日', '一', '二', '三', '四', '五', '六'];
   var currentMood = '';
 
-  // ==================== 工具与音效 ====================
   function pad2(n) { return n < 10 ? '0' + n : '' + n; }
   function dayKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
   function fmtTime(d) { return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
@@ -372,7 +363,6 @@ body.warning-mode .title { color: var(--warning); }
     return h > 0 ? h + 'h ' + m + 'm' : m + ' 分钟';
   }
 
-  // 音效合成器 (Web Audio API)
   function playSound(type) {
     try {
       var AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -402,14 +392,12 @@ body.warning-mode .title { color: var(--warning); }
     if (navigator.vibrate) navigator.vibrate(ms);
   }
 
-  // ==================== 数据层 ====================
   var cache = null;
   function getData() {
     if (cache === null) {
       try {
         var raw = window.localStorage.getItem(CONFIG.storageKey);
         var obj = raw ? JSON.parse(raw) : {};
-        // 数据初始化
         if (!obj.__shop) obj.__shop = { score: 0, freeze: 0, starTheme: false };
         if (!obj.__meta) obj.__meta = { lastTime: Date.now() };
         cache = obj;
@@ -418,28 +406,22 @@ body.warning-mode .title { color: var(--warning); }
     return cache;
   }
   function saveData(data) {
-    data.__meta.lastTime = Date.now(); // 每次保存更新最后操作时间（防作弊）
+    data.__meta.lastTime = Date.now();
     try { window.localStorage.setItem(CONFIG.storageKey, JSON.stringify(data)); } catch (e) {}
   }
 
-  // ==================== 防作弊检测 ====================
   var isCheating = false;
   function checkCheat() {
     var data = getData();
     var now = Date.now();
-    // 如果当前时间比上次保存时间倒退了超过 10 分钟，判定为作弊
     if (now < data.__meta.lastTime - 600000) {
       isCheating = true;
-      document.getElementById('status').textContent = '检测到时间异常，请恢复手机时间！';
-      document.getElementById('status').style.color = 'var(--warning)';
-      document.getElementById('checkinBtn').disabled = true;
     } else {
       isCheating = false;
-      data.__meta.lastTime = now; // 更新
+      data.__meta.lastTime = now;
     }
   }
 
-  // ==================== 时间与积分计算 ====================
   function getStatus(now) {
     if (isCheating) return { type: 'cheat', isOpen: false };
 
@@ -467,7 +449,8 @@ body.warning-mode .title { color: var(--warning); }
       return { type: 'night', key: key, isOpen: !hasNight, isDone: !!hasNight };
     }
     var isWarning = (mins >= 0 && mins < nEnd);
-    return { type: 'closed', key: key, isOpen: false, isDone: false, nextOpenMins: mEnd, isWarning: isWarning };
+    // 修复：将下一次开放时间统一设为今晚 22:00 (nStart)
+    return { type: 'closed', key: key, isOpen: false, isDone: false, nextOpenMins: nStart, isWarning: isWarning };
   }
 
   function calcNightScore(date) {
@@ -488,44 +471,37 @@ body.warning-mode .title { color: var(--warning); }
     return 10;
   }
 
-  // ==================== 统计与商店 ====================
   function getStats(sessionKey) {
     var data = getData();
     var d = new Date(sessionKey + 'T12:00:00');
     var streak = 0, month = 0;
     var m = d.getMonth(), y = d.getFullYear();
 
-    // 统计本月
     for (var k in data) {
       if (k.indexOf('__') === 0) continue;
       var parts = k.split('-');
       if (+parts[0] === y && (+parts[1] - 1) === m) month++;
     }
 
-    // 连续计算（带免死金牌逻辑）
     var checkD = new Date(d.getTime());
     if (!data[dayKey(checkD)] || !data[dayKey(checkD)].night) {
-      checkD.setDate(checkD.getDate() - 1); // 今天没打，从昨天开始算
+      checkD.setDate(checkD.getDate() - 1);
     }
     var tempFreeze = data.__shop.freeze;
     var gapCount = 0;
 
-    // 往前找 400 天
     for (var i = 0; i < 400; i++) {
       var k = dayKey(checkD);
       var rec = data[k];
       if (rec && rec.night) {
-        streak++;
-        gapCount = 0; // 打卡了，重置断签计数
+        streak++; gapCount = 0;
       } else {
-        if (tempFreeze > 0 && i > 0) { // 有免死金牌且不是今天（今天还没过完）
-          tempFreeze--;
-          streak++; // 假象延续
-          gapCount = 0;
+        if (tempFreeze > 0 && i > 0) {
+          tempFreeze--; streak++; gapCount = 0;
         } else {
-          if (gapCount > 0) break; // 彻底断了
+          if (gapCount > 0) break;
           gapCount++;
-          if (checkD.getTime() < d.getTime() - 86400000) break; // 只有昨天允许没打卡(可能用免死)
+          if (checkD.getTime() < d.getTime() - 86400000) break;
         }
       }
       checkD.setDate(checkD.getDate() - 1);
@@ -575,7 +551,7 @@ body.warning-mode .title { color: var(--warning); }
     monday.setDate(now.getDate() - dayOfWeek + 1);
     
     var daysChecked = 0, totalScore = 0, totalDur = 0, countDur = 0;
-    var chartData = []; // 用于柱状图
+    var chartData = [];
 
     for (var i = 0; i < 7; i++) {
       var k = dayKey(monday);
@@ -589,7 +565,7 @@ body.warning-mode .title { color: var(--warning); }
             totalScore += (rec.morning.score || 0);
             var diff = rec.morning.ts - rec.night.ts;
             totalDur += diff; countDur++;
-            durH = diff / 3600000; // 小时
+            durH = diff / 3600000;
           }
         }
       }
@@ -606,7 +582,6 @@ body.warning-mode .title { color: var(--warning); }
     return { days: daysChecked, score: totalScore, avgDur: avgDur, comment: comment, chart: chartData };
   }
 
-  // ==================== 渲染核心 ====================
   var currentView = 'week';
 
   function applyTheme(streak) {
@@ -662,27 +637,41 @@ body.warning-mode .title { color: var(--warning); }
     document.getElementById('clockS').textContent = pad2(now.getSeconds());
 
     var btn = document.getElementById('checkinBtn'), status = document.getElementById('status');
-    var title = document.getElementById('mainTitle'), badge = document.getElementById('modeBadge');
+    var title = document.getElementById('mainTitle');
     document.body.classList.toggle('warning-mode', state.type === 'closed' && state.isWarning);
 
     if (state.type === 'cheat') {
-      title.textContent = '时间异常'; btn.dataset.state = 'locked'; btn.disabled = true;
+      title.textContent = '时间异常';
+      btn.dataset.state = 'locked'; btn.disabled = true;
+      status.textContent = '检测到时间异常，请恢复手机时间！';
+      status.style.color = 'var(--warning)';
     } else if (state.type === 'morning') {
-      title.textContent = '早安打卡'; document.getElementById('badgeText').textContent = '每日 06:00 - 09:00'; badge.classList.add('morning');
+      title.textContent = '早安打卡';
+      status.style.color = '';
       if (state.isDone) { btn.dataset.state = 'done'; btn.disabled = true; document.getElementById('btnLabel').textContent = '早安，今天也要加油！'; status.textContent = `早起打卡成功 ☀️`; }
       else { btn.dataset.state = 'ready-morning'; btn.disabled = false; document.getElementById('btnLabel').textContent = '打 卡'; status.textContent = '早起通道已开启'; }
       status.dataset.tone = state.isDone ? 'done' : 'ready';
     } else if (state.type === 'night') {
-      title.textContent = '上床打卡'; document.getElementById('badgeText').textContent = '每日 22:00 - 03:00'; badge.classList.remove('morning');
+      title.textContent = '上床打卡';
+      status.style.color = '';
       if (state.isDone) { btn.dataset.state = 'done'; btn.disabled = true; document.getElementById('btnLabel').textContent = '已打卡'; status.textContent = `已打卡，晚安 🌙`; }
       else { btn.dataset.state = 'ready'; btn.disabled = false; document.getElementById('btnLabel').textContent = '打 卡'; status.textContent = '通道已开启 · 早点休息'; }
       status.dataset.tone = state.isDone ? 'done' : 'ready';
     } else {
-      title.textContent = state.isWarning ? '太晚了，赶紧睡觉！' : '上床打卡'; document.getElementById('badgeText').textContent = '每日 22:00 - 03:00'; badge.classList.remove('morning');
+      title.textContent = state.isWarning ? '太晚了，赶紧睡觉！' : '上床打卡';
+      status.style.color = '';
       btn.dataset.state = 'locked'; btn.disabled = true; document.getElementById('btnLabel').textContent = '未到时间';
-      var nextOpen = new Date(now.getTime()); nextOpen.setHours(Math.floor(state.nextOpenMins / 60), state.nextOpenMins % 60, 0, 0);
+      
+      // 修复倒计时显示逻辑
+      var nextOpen = new Date(now.getTime());
+      nextOpen.setHours(Math.floor(state.nextOpenMins / 60), state.nextOpenMins % 60, 0, 0);
       var diff = nextOpen.getTime() - now.getTime();
-      if (diff > 0 && !isCheating) status.textContent = `距开放还有 ${Math.floor(diff / 3600000)} 小时 ${Math.floor((diff % 3600000) / 60000)} 分`;
+      
+      if (diff > 0) {
+        status.textContent = `距离开启还有 ${Math.floor(diff / 3600000)} 小时 ${Math.floor((diff % 3600000) / 60000)} 分`;
+      } else {
+        status.textContent = '通道未开启';
+      }
       status.dataset.tone = 'locked';
     }
 
@@ -705,7 +694,6 @@ body.warning-mode .title { color: var(--warning); }
     else document.getElementById('weekSummaryBtn').classList.remove('show');
   }
 
-  // ==================== 交互逻辑 ====================
   document.getElementById('viewToggle').addEventListener('click', function() {
     if (currentView === 'week') {
       currentView = 'calendar'; this.textContent = '切换七天'; document.getElementById('viewTitle').textContent = '本月记录';
@@ -762,7 +750,7 @@ body.warning-mode .title { color: var(--warning); }
     
     var score = calcNightScore(now);
     data[state.key].night = { ts: now.getTime(), mood: currentMood, note: note, score: score };
-    data.__shop.score += score; // 累加总积分
+    data.__shop.score += score;
     saveData(data);
     
     document.getElementById('moodModal').classList.remove('active');
@@ -771,7 +759,6 @@ body.warning-mode .title { color: var(--warning); }
     burst(document.getElementById('checkinBtn'), 'var(--theme)');
   });
 
-  // ==================== 周报柱状图渲染 ====================
   document.getElementById('weekSummaryBtn').addEventListener('click', function() {
     playSound('click');
     var summary = getWeekSummary();
@@ -780,12 +767,11 @@ body.warning-mode .title { color: var(--warning); }
     document.getElementById('sumAvg').textContent = summary.avgDur;
     document.getElementById('sumComment').textContent = summary.comment;
 
-    // 渲染柱状图
     var chartHtml = '';
-    var maxHours = 12; // 最高 12 小时
+    var maxHours = 12;
     summary.chart.forEach(function(d) {
       var heightPct = Math.min((d.hours / maxHours) * 100, 100);
-      if (d.hours === 0) heightPct = 5; // 没打卡就显示一点底边
+      if (d.hours === 0) heightPct = 5;
       chartHtml += `
         <div class="chart-bar-wrap">
           <div class="chart-bar" style="height: ${heightPct}%; ${d.hours===0?'background:#333;box-shadow:none;':''}"></div>
@@ -794,7 +780,6 @@ body.warning-mode .title { color: var(--warning); }
       `;
     });
     document.getElementById('chartContainer').innerHTML = chartHtml;
-
     document.getElementById('weekSummaryModal').classList.add('active');
   });
   document.getElementById('weekSummaryClose').addEventListener('click', function() {
@@ -802,7 +787,7 @@ body.warning-mode .title { color: var(--warning); }
     document.getElementById('weekSummaryModal').classList.remove('active');
   });
 
-  // ==================== 设置、备份与商店 ====================
+  // 设置与商店
   document.getElementById('settingsBtn').addEventListener('click', function() {
     playSound('click');
     document.getElementById('dataArea').value = JSON.stringify(getData(), null, 2);
@@ -826,7 +811,6 @@ body.warning-mode .title { color: var(--warning); }
     } catch (e) { alert('数据格式错误，恢复失败！'); }
   });
 
-  // 极简模式
   document.getElementById('minimalToggleBtn').addEventListener('click', function() {
     playSound('click');
     document.body.classList.toggle('minimal-mode');
@@ -836,21 +820,8 @@ body.warning-mode .title { color: var(--warning); }
     localStorage.setItem('bedtime_minimal', isMin ? '1' : '0');
   });
 
-  // 打开商店按钮（这里直接放在长按设置齿轮里，为了方便测试，我在左上角加个隐藏热区）
-  document.getElementById('modeBadge').addEventListener('dblclick', openShop);
-  var clickCount = 0, clickTimer = null;
-  document.getElementById('settingsBtn').addEventListener('click', function(e) {
-    if (!e.detail) return; // 忽略触发的多次
-    clickCount++;
-    if (clickCount === 3) { // 连点三次齿轮打开商店
-      openShop();
-      clickCount = 0;
-    }
-    clearTimeout(clickTimer);
-    clickTimer = setTimeout(() => { clickCount = 0; }, 500);
-  });
-
-  function openShop() {
+  // 商店直接显示
+  document.getElementById('shopBtn').addEventListener('click', function() {
     playSound('success');
     var data = getData();
     document.getElementById('shopScore').textContent = data.__shop.score;
@@ -865,12 +836,11 @@ body.warning-mode .title { color: var(--warning); }
     
     document.getElementById('shopMsg').textContent = '';
     document.getElementById('shopModal').classList.add('active');
-  }
+  });
 
   document.getElementById('shopClose').addEventListener('click', function() {
     playSound('click');
     document.getElementById('shopModal').classList.remove('active');
-    document.getElementById('settingsModal').classList.remove('active');
     renderUI();
   });
 
@@ -884,6 +854,7 @@ body.warning-mode .title { color: var(--warning); }
       document.getElementById('shopScore').textContent = data.__shop.score;
       document.getElementById('freezeCount').textContent = data.__shop.freeze;
       document.getElementById('shopMsg').textContent = '兑换成功！断签自动触发保护。';
+      document.getElementById('buyFreezeBtn').disabled = data.__shop.score < 500;
     }
   });
 
@@ -896,14 +867,12 @@ body.warning-mode .title { color: var(--warning); }
       playSound('success'); vibrate(100);
       document.getElementById('shopScore').textContent = data.__shop.score;
       this.textContent = '已拥有'; this.disabled = true;
-      document.getElementById('shopMsg').textContent = '解锁成功！(特效即将上线)';
-      // 这里可以改变背景 blob 的样式作为奖励
+      document.getElementById('shopMsg').textContent = '解锁成功！';
       document.querySelector('.blob--a').style.background = 'radial-gradient(circle at 40% 40%, #ff00cc 0%, transparent 68%)';
       document.querySelector('.blob--b').style.background = 'radial-gradient(circle at 50% 50%, #333399 0%, transparent 68%)';
     }
   });
 
-  // ==================== 粒子特效 ====================
   function burst(anchor, color) {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (document.body.classList.contains('minimal-mode')) return;
@@ -926,49 +895,21 @@ body.warning-mode .title { color: var(--warning); }
     }
   }
 
-  // ==================== 动态注册 PWA 离线缓存 ====================
-  function initPWA() {
+  // PWA 注册
+  try {
     if ('serviceWorker' in navigator) {
-      // 动态生成 SW 内容，实现断网可用
-      var swCode = `
-        const CACHE_NAME = 'bedtime-app-v4';
-        self.addEventListener('install', (e) => {
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', (e) => {
-          e.waitUntil(clients.claim());
-        });
-        self.addEventListener('fetch', (e) => {
-          e.respondWith(
-            caches.match(e.request).then((response) => {
-              return response || fetch(e.request).then((res) => {
-                return caches.open(CACHE_NAME).then((cache) => {
-                  if (e.request.url.indexOf('http') === 0) cache.put(e.request, res.clone());
-                  return res;
-                });
-              });
-            }).catch(() => {
-              return new Response('离线状态', { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-            })
-          );
-        });
-      `;
+      var swCode = `const CACHE_NAME = 'bedtime-app-v5'; self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => e.waitUntil(clients.claim())); self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => caches.open(CACHE_NAME).then(c => { if (e.request.url.indexOf('http') === 0) c.put(e.request, res.clone()); return res; })).catch(() => new Response('Offline')))); });`;
       var blob = new Blob([swCode], { type: 'application/javascript' });
-      var swUrl = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(swUrl).catch(e => console.log('PWA Reg Failed', e));
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(e => {});
     }
-  }
+  } catch (e) {}
 
-  // ==================== 启动 ====================
-  // 读取极简模式状态
   if (localStorage.getItem('bedtime_minimal') === '1') {
     document.body.classList.add('minimal-mode');
     var mBtn = document.getElementById('minimalToggleBtn');
     mBtn.textContent = '关闭';
     mBtn.style.background = '#555';
   }
-
-  initPWA();
 
   function tick() {
     renderUI();
